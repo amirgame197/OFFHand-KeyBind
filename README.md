@@ -25,8 +25,13 @@ Off-hand Use to another occupied game control, rebind that other control too.
 ## Player requirements
 
 - Minecraft Java Edition 1.21.11
-- Fabric Loader 0.19.3 or newer
+- Fabric Loader 0.18.4 or newer
 - Fabric API 0.141.5+1.21.11 or newer compatible with 1.21.11
+
+> **C2ME note:** Offhand Keybind works with Java 21. If your launcher says
+> `c2me-opts-natives-math` needs Java 22, select Java 22 in the launcher or
+> remove/update that C2ME module. That requirement comes from C2ME, not this
+> mod.
 
 This is a client-only mod. It uses the same normal interaction packets as
 Minecraft, so it does not need to be installed on a vanilla server.

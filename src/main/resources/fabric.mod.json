@@ -21,7 +21,7 @@
     "offhandkeybind.client.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.19.3",
+    "fabricloader": ">=0.18.4",
     "fabric-api": "*",
     "minecraft": "1.21.11",
     "java": ">=21"

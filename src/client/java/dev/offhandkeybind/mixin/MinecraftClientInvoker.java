@@ -1,12 +1,12 @@
 package dev.offhandkeybind.mixin;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 /** Exposes Minecraft's private, vanilla item-use implementation to the keybind mixin. */
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public interface MinecraftClientInvoker {
-    @Invoker("doItemUse")
-    void offhandkeybind$invokeDoItemUse();
+    @Invoker("startUseItem")
+    void offhandkeybind$invokeStartUseItem();
 }

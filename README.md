@@ -1,74 +1,64 @@
 # Offhand Keybind
 
-A client-side Fabric mod for Minecraft Java **1.21.11** that separates the
-off-hand item-use action from the normal Use key.
+A client-side Fabric mod for Minecraft Java **26.2**. It separates off-hand
+item use from Minecraft's normal Use key.
 
-The bow-with-no-arrows example in the request is a Minecraft **Use** action
-(normally right-click), not the left-click combat attack. Vanilla tries the
-main hand first and falls back to the off hand when the main hand does not
-handle the use. This mod changes that behavior:
+The bow-with-no-arrows example is a Minecraft **Use** action (normally right
+click), not a left-click combat attack. Vanilla tries the main hand first and
+then falls back to the off hand if the main hand does not handle the action.
+This mod changes that behavior:
 
 - The normal Minecraft Use key only attempts the **main hand**.
 - The new **Off-hand Use** key only attempts the **off hand**.
 - Off-hand fallback from the normal Use key is disabled completely.
-- Normal left-click attack/destroy behavior is unchanged.
+- Normal left-click attack and block-breaking behavior is unchanged.
 
-The dedicated key is registered in **Options → Controls → Key Binds → Offhand
-Keybind** and defaults to **Mouse 3 / middle click**. It can be rebound from
-that screen like every other Minecraft keybind. Holding it uses the same
-repeat/cooldown behavior as the normal Use key.
+The dedicated key is registered in **Options > Controls > Key Binds > Offhand
+Keybind**. It defaults to **Mouse 3 / middle click** and can be rebound like
+any other Minecraft keybind. Holding it follows Minecraft's normal use-repeat
+and cooldown behavior.
 
-The default middle-click binding intentionally takes precedence over
-Minecraft's Pick Block action while both use the same button. If you rebind
-Off-hand Use to another occupied game control, rebind that other control too.
+Mouse 3 is also Minecraft's default Pick Block key. While both bindings use
+the same button, this mod gives **Off-hand Use** priority. If you rebind
+Off-hand Use to another occupied control, rebind that other control as well.
 
-## Player requirements
+## Requirements
 
-- Minecraft Java Edition 1.21.11
-- Fabric Loader 0.18.4 or newer
-- Fabric API 0.141.5+1.21.11 or newer compatible with 1.21.11
+- Minecraft Java Edition 26.2
+- Fabric Loader 0.19.3 or newer
+- Fabric API 0.154.2+26.2 or a newer compatible 26.2 release
+- Java 25 or newer
 
-> **C2ME note:** Offhand Keybind works with Java 21. If your launcher says
-> `c2me-opts-natives-math` needs Java 22, select Java 22 in the launcher or
-> remove/update that C2ME module. That requirement comes from C2ME, not this
-> mod.
+This is a client-only mod. It uses Minecraft's normal interaction packets, so
+the mod is not required on a vanilla server.
 
-This is a client-only mod. It uses the same normal interaction packets as
-Minecraft, so it does not need to be installed on a vanilla server.
+## Build with GitHub Actions
 
-## Build it with GitHub Actions
+You do not need to install Java, Gradle, or any build tools locally. The
+workflow at [`.github/workflows/build.yml`](.github/workflows/build.yml) uses
+Java 25 and builds the release JAR on GitHub.
 
-No local Java or Gradle installation is needed. The repository includes a
-workflow at [`.github/workflows/build.yml`](.github/workflows/build.yml) that
-uses Java 21 and builds the release JAR.
-
-1. Push this project to the connected GitHub repository.
+1. Commit and push this project to GitHub.
 2. Open the repository's **Actions** tab.
-3. Select **Build Fabric mod** and choose **Run workflow**. A push to any
-   branch also starts the build automatically.
-4. When the workflow finishes, open its run and download the
-   `offhand-keybind-1.21.11-...` artifact. The downloaded ZIP contains the
-   playable mod JAR, not a development JAR.
+3. Select **Build Fabric mod**, then choose **Run workflow**. Pushing to a
+   branch also starts it automatically.
+4. Open the successful run and download the `offhand-keybind-26.2-...`
+   artifact. Its ZIP contains the playable JAR, not a development or sources
+   JAR.
 
-To use the built mod, place the JAR and the matching Fabric API JAR in the
-`mods` folder of a Fabric 1.21.11 Minecraft instance.
+Place that JAR and the matching Fabric API JAR in the `mods` folder of a Fabric
+26.2 instance that runs on Java 25.
 
-## Local commands (optional)
+## Version compatibility
 
-GitHub Actions is the intended build path. If you later install Java 21, these
-commands also work locally:
-
-```powershell
-.\gradlew.bat build
-.\gradlew.bat runClient
-```
-
-The built release JAR is written to `build/libs/`.
+Version 2.0.0 and later target Minecraft 26.2 only. Minecraft 26.1 introduced
+unobfuscated Mojang names and removed Fabric's supported Yarn mapping path, so
+the 1.21.11 JAR cannot run on 26.2 and this 26.2 JAR cannot run on 1.21.11.
 
 ## Technical approach
 
-The mod leaves Minecraft's item-use implementation intact. A small mixin
-selects only `MAIN_HAND` when Minecraft's normal Use key invokes that method,
-and selects only `OFF_HAND` while the dedicated key invokes the same method.
-This preserves vanilla block/entity/item interaction ordering, animations,
-cooldowns, and networking while removing the fallback behavior.
+The mod keeps Minecraft's own item-use routine intact. A small mixin limits
+normal Use to `MAIN_HAND`, and invokes that same routine with `OFF_HAND` for
+the dedicated key. This preserves vanilla block, entity, and item interaction
+ordering, animations, cooldowns, and networking while removing the off-hand
+fallback.

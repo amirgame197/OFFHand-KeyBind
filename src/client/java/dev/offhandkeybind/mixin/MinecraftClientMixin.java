@@ -1,10 +1,10 @@
 package dev.offhandkeybind.mixin;
 
 import dev.offhandkeybind.OffhandKeybindClient;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.util.Hand;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,14 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Makes vanilla use main-hand-only and routes the dedicated binding through
  * the very same vanilla use routine with the off hand selected instead.
  */
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 abstract class MinecraftClientMixin {
     @Shadow
     @Final
-    public GameOptions options;
+    public Options options;
 
     @Shadow
-    private int itemUseCooldown;
+    private int rightClickDelay;
 
     @Unique
     private int offhandkeybind$queuedOffhandPresses;
@@ -36,16 +36,16 @@ abstract class MinecraftClientMixin {
      * the context set and receive only OFF_HAND.
      */
     @Redirect(
-            method = "doItemUse",
+            method = "startUseItem",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/Hand;values()[Lnet/minecraft/util/Hand;"
+                    target = "Lnet/minecraft/world/InteractionHand;values()[Lnet/minecraft/world/InteractionHand;"
             )
     )
-    private Hand[] offhandkeybind$chooseOnlyOneHand() {
+    private InteractionHand[] offhandkeybind$chooseOnlyOneHand() {
         return OffhandKeybindClient.isOffhandUseActive()
-                ? new Hand[]{Hand.OFF_HAND}
-                : new Hand[]{Hand.MAIN_HAND};
+                ? new InteractionHand[]{InteractionHand.OFF_HAND}
+                : new InteractionHand[]{InteractionHand.MAIN_HAND};
     }
 
     /**
@@ -54,22 +54,22 @@ abstract class MinecraftClientMixin {
      * does not additionally trigger Pick Block in creative mode.
      */
     @Redirect(
-            method = "handleInputEvents",
+            method = "handleKeybinds",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z"
+                    target = "Lnet/minecraft/client/KeyMapping;consumeClick()Z"
             )
     )
-    private boolean offhandkeybind$skipConflictingPickBlock(KeyBinding keyBinding) {
-        if (keyBinding == this.options.pickItemKey && offhandkeybind$sharesBindingWith(keyBinding)) {
-            while (OffhandKeybindClient.OFFHAND_USE_KEY.wasPressed()) {
+    private boolean offhandkeybind$skipConflictingPickBlock(KeyMapping keyBinding) {
+        if (keyBinding == this.options.keyPickItem && offhandkeybind$sharesBindingWith(keyBinding)) {
+            while (OffhandKeybindClient.OFFHAND_USE_KEY.consumeClick()) {
                 this.offhandkeybind$queuedOffhandPresses++;
             }
 
             return false;
         }
 
-        return keyBinding.wasPressed();
+        return keyBinding.consumeClick();
     }
 
     /**
@@ -77,13 +77,13 @@ abstract class MinecraftClientMixin {
      * held-use check so bows, food, shields, and other held interactions keep
      * their expected repeat/cooldown behavior.
      */
-    @Inject(method = "handleInputEvents", at = @At("TAIL"))
+    @Inject(method = "handleKeybinds", at = @At("TAIL"))
     private void offhandkeybind$handleDedicatedOffhandKey(CallbackInfo ci) {
-        MinecraftClient client = (MinecraftClient) (Object) this;
+        Minecraft client = (Minecraft) (Object) this;
 
         if (client.player == null) {
             this.offhandkeybind$queuedOffhandPresses = 0;
-            while (OffhandKeybindClient.OFFHAND_USE_KEY.wasPressed()) {
+            while (OffhandKeybindClient.OFFHAND_USE_KEY.consumeClick()) {
                 // Consume presses that happened while no world was loaded.
             }
             return;
@@ -94,12 +94,12 @@ abstract class MinecraftClientMixin {
             offhandkeybind$useOffhandOnly();
         }
 
-        while (OffhandKeybindClient.OFFHAND_USE_KEY.wasPressed()) {
+        while (OffhandKeybindClient.OFFHAND_USE_KEY.consumeClick()) {
             offhandkeybind$useOffhandOnly();
         }
 
-        if (OffhandKeybindClient.OFFHAND_USE_KEY.isPressed()
-                && this.itemUseCooldown == 0
+        if (OffhandKeybindClient.OFFHAND_USE_KEY.isDown()
+                && this.rightClickDelay == 0
                 && !client.player.isUsingItem()) {
             offhandkeybind$useOffhandOnly();
         }
@@ -108,14 +108,13 @@ abstract class MinecraftClientMixin {
     @Unique
     private void offhandkeybind$useOffhandOnly() {
         OffhandKeybindClient.useOffhandOnly(
-                () -> ((MinecraftClientInvoker) (Object) this).offhandkeybind$invokeDoItemUse()
+                () -> ((MinecraftClientInvoker) (Object) this).offhandkeybind$invokeStartUseItem()
         );
     }
 
     @Unique
-    private boolean offhandkeybind$sharesBindingWith(KeyBinding vanillaKey) {
+    private boolean offhandkeybind$sharesBindingWith(KeyMapping vanillaKey) {
         return !OffhandKeybindClient.OFFHAND_USE_KEY.isUnbound()
-                && OffhandKeybindClient.OFFHAND_USE_KEY.getBoundKeyTranslationKey()
-                .equals(vanillaKey.getBoundKeyTranslationKey());
+                && OffhandKeybindClient.OFFHAND_USE_KEY.same(vanillaKey);
     }
 }

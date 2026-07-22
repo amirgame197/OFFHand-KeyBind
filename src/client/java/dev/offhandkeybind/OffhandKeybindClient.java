@@ -2,9 +2,9 @@ package dev.offhandkeybind;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -13,15 +13,15 @@ import org.lwjgl.glfw.GLFW;
 public final class OffhandKeybindClient implements ClientModInitializer {
     public static final String MOD_ID = "offhandkeybind";
 
-    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.create(
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "gameplay")
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath(MOD_ID, "gameplay")
     );
 
     /**
      * Middle mouse button is GLFW mouse button 2, commonly labelled Mouse 3 in
      * Minecraft's controls menu.
      */
-    public static final KeyMapping OFFHAND_USE_KEY = KeyBindingHelper.registerKeyBinding(
+    public static final KeyMapping OFFHAND_USE_KEY = KeyMappingHelper.registerKeyMapping(
             new KeyMapping(
                     "key.offhandkeybind.offhand_use",
                     InputConstants.Type.MOUSE,

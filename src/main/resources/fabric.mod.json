@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "offhandkeybind",
+  "version": "${version}",
+  "name": "Offhand Keybind",
+  "description": "Separates off-hand item use from Minecraft's normal Use key.",
+  "authors": [
+    "Offhand Keybind contributors"
+  ],
+  "contact": {
+    "sources": "https://github.com/amirgame197/OFFHand-KeyBind"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.offhandkeybind.OffhandKeybindClient"
+    ]
+  },
+  "mixins": [
+    "offhandkeybind.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "fabric-api": "*",
+    "minecraft": "1.21.11",
+    "java": ">=21"
+  }
+}

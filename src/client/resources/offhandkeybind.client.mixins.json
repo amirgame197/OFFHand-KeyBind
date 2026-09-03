@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.offhandkeybind.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "MinecraftClientInvoker",
+    "MinecraftClientMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

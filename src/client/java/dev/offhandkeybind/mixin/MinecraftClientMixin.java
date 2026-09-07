@@ -4,6 +4,7 @@ import dev.offhandkeybind.OffhandKeybindClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,12 +63,12 @@ abstract class MinecraftClientMixin {
             method = "handleKeybinds",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/Minecraft;stopUsingItem()V"
+                target = "Lnet/minecraft/client/player/LocalPlayer;stopUsingItem()V"
             )
     )
-    private void offhandkeybind$keepOffhandUseWhileHeld(Minecraft client) {
+        private void offhandkeybind$keepOffhandUseWhileHeld(LocalPlayer player) {
         if (!OffhandKeybindClient.OFFHAND_USE_KEY.isDown()) {
-            ((MinecraftClientInvoker) (Object) client).offhandkeybind$invokeStopUsingItem();
+            player.stopUsingItem();
         }
     }
 

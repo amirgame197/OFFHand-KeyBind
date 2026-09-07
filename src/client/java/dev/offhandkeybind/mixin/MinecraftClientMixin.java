@@ -4,8 +4,9 @@ import dev.offhandkeybind.OffhandKeybindClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -63,12 +64,12 @@ abstract class MinecraftClientMixin {
             method = "handleKeybinds",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/LivingEntity;stopUsingItem()V"
+                    target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;releaseUsingItem(Lnet/minecraft/world/entity/player/Player;)V"
             )
     )
-    private void offhandkeybind$keepOffhandUseWhileHeld(LivingEntity player) {
+    private void offhandkeybind$keepOffhandUseWhileHeld(MultiPlayerGameMode gameMode, Player player) {
         if (!OffhandKeybindClient.OFFHAND_USE_KEY.isDown()) {
-            player.stopUsingItem();
+            gameMode.releaseUsingItem(player);
         }
     }
 

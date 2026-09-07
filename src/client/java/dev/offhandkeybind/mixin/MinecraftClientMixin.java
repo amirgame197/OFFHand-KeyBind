@@ -58,6 +58,19 @@ abstract class MinecraftClientMixin {
         return keyBinding.consumeClick();
     }
 
+    @Redirect(
+            method = "handleKeybinds",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/Minecraft;stopUsingItem()V"
+            )
+    )
+    private void offhandkeybind$keepOffhandUseWhileHeld(Minecraft client) {
+        if (!OffhandKeybindClient.OFFHAND_USE_KEY.isDown()) {
+            client.stopUsingItem();
+        }
+    }
+
     @Inject(method = "handleKeybinds", at = @At("TAIL"))
     private void offhandkeybind$handleDedicatedOffhandKey(CallbackInfo ci) {
         Minecraft client = (Minecraft) (Object) this;

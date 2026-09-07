@@ -67,7 +67,7 @@ abstract class MinecraftClientMixin {
     )
     private void offhandkeybind$keepOffhandUseWhileHeld(Minecraft client) {
         if (!OffhandKeybindClient.OFFHAND_USE_KEY.isDown()) {
-            client.stopUsingItem();
+            ((MinecraftClientInvoker) (Object) client).offhandkeybind$invokeStopUsingItem();
         }
     }
 

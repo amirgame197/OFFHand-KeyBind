@@ -8,4 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface MinecraftClientInvoker {
     @Invoker("startUseItem")
     void offhandkeybind$invokeStartUseItem();
+
+    @Invoker("stopUsingItem")
+    void offhandkeybind$invokeStopUsingItem();
 }

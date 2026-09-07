@@ -4,7 +4,7 @@ import dev.offhandkeybind.OffhandKeybindClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,10 +63,10 @@ abstract class MinecraftClientMixin {
             method = "handleKeybinds",
             at = @At(
                     value = "INVOKE",
-                target = "Lnet/minecraft/client/player/LocalPlayer;stopUsingItem()V"
+                    target = "Lnet/minecraft/world/entity/LivingEntity;stopUsingItem()V"
             )
     )
-        private void offhandkeybind$keepOffhandUseWhileHeld(LocalPlayer player) {
+    private void offhandkeybind$keepOffhandUseWhileHeld(LivingEntity player) {
         if (!OffhandKeybindClient.OFFHAND_USE_KEY.isDown()) {
             player.stopUsingItem();
         }

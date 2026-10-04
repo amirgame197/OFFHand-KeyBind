@@ -5,7 +5,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public final class OffhandKeybindClient implements ClientModInitializer {
     public static final String MOD_ID = "offhandkeybind";
@@ -18,7 +17,7 @@ public final class OffhandKeybindClient implements ClientModInitializer {
             new KeyMapping(
                     "key.offhandkeybind.offhand_use",
                     InputConstants.Type.MOUSE,
-                    GLFW.GLFW_MOUSE_BUTTON_MIDDLE,
+                    InputConstants.MOUSE_BUTTON_MIDDLE,
                     CATEGORY
             )
     );
